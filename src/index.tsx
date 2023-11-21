@@ -1,19 +1,44 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import { ColorModeScript } from '@chakra-ui/react'
+import theme from './config/themeconfg'
+import { ChakraProvider } from '@chakra-ui/react'
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import cookie from 'react-cookies'
+import Home from './pages/home/homePage';
+import Welcome from './pages/welcome/welcomePage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const TOKEN = cookie.load('token')
+console.log(TOKEN)
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    // element: TOKEN ? <App /> : <Welcome />,
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+    ],
+  },
+]);
+
 root.render(
   <React.StrictMode>
-    <App />
+    <ChakraProvider>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <RouterProvider router={router} />
+    </ChakraProvider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
