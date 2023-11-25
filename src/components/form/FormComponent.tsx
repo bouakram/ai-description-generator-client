@@ -1,20 +1,19 @@
 import { Stack } from '@chakra-ui/react'
-import React, { useState } from 'react'
-import Register from './Register'
-import Login from './Login'
-import { AuthType } from '../../types/types'
+import RegisterComponent from './register/RegisterComponent'
+import LoginComponent from './login/LoginComponent'
+import { useStore } from '../../utils/store'
 
 type Props = {}
 
 const FormComponent = (props: Props) => {
-    const [authType, setAuthType] = useState<AuthType>('register')
+    const authType = useStore(store => store.authType)
     return (
         <Stack maxW='768px' minH='calc(100vh - 6rem)' mx='auto' p='4' justifyContent='center' alignContent='center'>
             {
                 authType === 'register' ?
-                    <Register Title='Register to ContentGen 🤖' handleFormChange={setAuthType} />
+                    <RegisterComponent Title='Register to ContentGen 🤖' />
                     :
-                    <Login Title='Login to ContentGen 🤖' handleFormChange={setAuthType} />
+                    <LoginComponent Title='Login to ContentGen 🤖' />
             }
         </Stack>
     )
