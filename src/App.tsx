@@ -12,6 +12,7 @@ import { useStore } from './utils/store';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { API_URL } from './constants';
+import CreatePage from './pages/create/createPage';
 
 ///// ! when redirect to the path = '/' the page is not rerender after registration or logging in.
 function App() {
@@ -45,6 +46,10 @@ function App() {
         {
           path: "/authentication",
           element: !token ? <AuthPage /> : <Navigate to='/' />,
+        },
+        {
+          path: "/create",
+          element: token ? <CreatePage /> : <Navigate to='/' />,
         },
       ],
     },
