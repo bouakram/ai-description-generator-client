@@ -1,6 +1,6 @@
 import { Box, Flex, Heading } from '@chakra-ui/react'
-import Create from '../../components/create/form/Create'
-import Results from '../../components/create/results/Results'
+import Create from '../../components/create/Create'
+import Results from '../../components/create/Results'
 
 // TODO: make all the components work dynamically
 
