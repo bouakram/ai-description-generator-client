@@ -1,6 +1,6 @@
 import { FormControl } from '@chakra-ui/react'
-import SubmitBtn from '../SubmitBtn'
-import InputComponent from '../InputComponent';
+import SubmitBtn from '../../SubmitBtn'
+import InputComponent from '../../formComponents/AuthInputComponent';
 import { LoginService } from '../../../services/authService';
 
 const LoginForm = () => {
@@ -8,10 +8,10 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit(onsubmit)}>
             <FormControl isRequired mb='4'>
-                <InputComponent label='Email Address' register={register} errorsType={errors} errorsMessage={errors.email?.message} placeholder='example@example.com' type='email' name='email' helper='please make sure to enter a valid email address' />
+                <InputComponent label='Email Address' register={register} errors={errors} errorsMessage={errors.email?.message} placeholder='example@example.com' type='email' name='email' helper='please make sure to enter a valid email address' />
             </FormControl>
             <FormControl isRequired mb='4'>
-                <InputComponent label='Password' register={register} errorsType={errors} errorsMessage={errors.password?.message} placeholder='enter your password: ******' type='password' name='password' helper='please make sure to enter the correct password' />
+                <InputComponent label='Password' register={register} errors={errors} errorsMessage={errors.password?.message} placeholder='enter your password: ******' type='password' name='password' helper='please make sure to enter the correct password' />
             </FormControl>
             <FormControl isRequired mb='4'>
                 <SubmitBtn loading={isPending} textloading='logging in' >Login</SubmitBtn>
