@@ -1,26 +1,33 @@
-import { Box, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Image, Progress, Stack, Text } from '@chakra-ui/react'
+import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, useToast } from '@chakra-ui/react'
 import mainImg from '../../assets/mainimg.gif'
 import generateImg from '../../assets/generateimg.gif'
 import { useEffect, useState } from 'react'
-import SubmitBtn from '../SubmitBtn'
+import { useStore } from '../../utils/store'
+import ResultsActions from './results/ResultsActions'
+import ProgressBar from './results/ProgressBar'
+import ImgComponent from './results/ImgComponent'
+import ResultsCard from './results/ResultsCard'
+import useCopy from '../../hooks/useCopy'
 
-// TODO: optimize this component ui
-
-type Props = {}
+///// TODO: optimize this component ui
 
 const data = ["generating the content", "the AI is doing the magic 🪄", "cleaning the information", "making the content ready to use", "just a few seconds the magic will be ready soon"]
 
-const Results = (props: Props) => {
-    const [results, setResults] = useState(true)
-    const [generating, setGenerating] = useState(false)
-    const [finished, seIfinished] = useState(false)
+const Results = () => {
+    const toast = useToast()
+    const { handleCopy, tooltipText } = useCopy()
+    const contentGenerated = useStore(store => store.contentGenerated)
+    const generating = useStore(store => store.generating)
+    const completed = useStore(store => store.completed)
+    const issue = useStore(store => store.issue)
     const [progress, setProgress] = useState(1)
     const [generatingText, setGeneratingText] = useState(data[0])
+
     useEffect(() => {
-        if (generateImg) {
+        if (generating) {
             const timer = setInterval(() => {
                 setProgress(prev => {
-                    if (finished) return 100
+                    if (completed) return 100
                     if (prev === 100) return 0
                     if (Math.random() < 0.1) return prev + 0.2
                     return prev + 0.5
@@ -42,7 +49,18 @@ const Results = (props: Props) => {
             }, 500)
             return () => clearInterval(timer)
         }
-    }, [finished, progress])
+    }, [generating, completed, progress])
+
+
+
+    if (issue) {
+        toast({
+            title: 'something went wrong',
+            position: 'top',
+            status: 'error',
+            isClosable: true,
+        })
+    }
     return (
         <Box flex='1' height='inherit' p='4'>
             <Card border='1px' borderRight='4px' borderBottom='4px' borderColor='inherit'>
@@ -50,48 +68,31 @@ const Results = (props: Props) => {
                     <Heading size='md'>The results will be displayed here</Heading>
                 </CardHeader>
                 <CardBody>
-                    <Flex alignContent='center' justifyContent='center'>
-                        {
-                            results ?
-                                <Card border='1px' borderColor='inherit' boxShadow='sm' >
-                                    <CardHeader>
-                                        <Heading size='sm'>Post 01</Heading>
-                                    </CardHeader>
-                                    <CardBody>
-                                        <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla, necessitatibus. <span style={{ color: 'teal' }}>#cool</span>, <span style={{ color: 'teal' }}>#nice</span></Text>
-                                    </CardBody>
-                                    <CardFooter>
-                                        <ButtonGroup spacing='4'>
-                                            <SubmitBtn variant='solid' size='sm'>Save</SubmitBtn>
-                                            <SubmitBtn variant='ghost' size='sm'>Edit</SubmitBtn>
-                                        </ButtonGroup>
-                                    </CardFooter>
-                                </Card>
-                                :
-                                generating ?
-                                    <Image
-                                        src={generateImg}
-                                        maxWidth='100%'
-                                        width={{ base: '350px', lg: '450px' }}
-                                        height={{ base: '350px', lg: '450px' }}
-                                        objectFit='fill'
-                                    />
-                                    :
-                                    <Image
-                                        src={mainImg}
-                                        maxWidth='100%'
-                                        width={{ base: '350px', lg: '450px' }}
-                                        height={{ base: '350px', lg: '450px' }}
-                                        objectFit='fill'
-                                    />
-                        }
-                    </Flex>
+                    {
+                        contentGenerated.length > 0 ?
+                            <Flex direction='column' alignContent='center' justifyContent='center' gap={4}>
+                                {contentGenerated.map((post, index) => (
+                                    <ResultsCard key={index} index={index} post={post} tooltipText={tooltipText} handleCopy={handleCopy} />
+                                ))}
+                            </Flex>
+                            :
+                            <Flex alignContent='center' justifyContent='center'>
+                                {
+                                    generating ?
+                                        <ImgComponent imgSrc={generateImg} />
+                                        :
+                                        <ImgComponent imgSrc={mainImg} />
+                                }
+                            </Flex>
+                    }
                 </CardBody>
                 <CardFooter>
-                    {generating && <Stack spacing='4' width='full'>
-                        <Progress colorScheme='teal' size='sm' value={progress} />
-                        <Text textAlign='center'>{generatingText}</Text>
-                    </Stack>}
+                    {
+                        generating && <ProgressBar progress={progress} generatingText={generatingText} />
+                    }
+                    {
+                        contentGenerated.length > 0 && <ResultsActions />
+                    }
                 </CardFooter>
             </Card>
         </Box>
